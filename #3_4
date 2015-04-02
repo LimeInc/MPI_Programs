@@ -1,0 +1,89 @@
+#include <mpi.h>
+#include <iostream>
+#include <cstdlib>
+#include <string>
+using namespace std;
+int main(int argc, char **argv)
+{
+	MPI_Init(&argc, &argv);
+	MPI_Request request;
+	MPI_Status status; 
+	int rank;
+	int tag=0;
+	char message[10];
+	strcpy(message,"Hello");
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+	if (rank == 0)
+	{ 
+	MPI_Irecv(&message, 6, MPI_INT, 8, tag, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request,&status);
+	if((rank+1)%3==0){cout<<"Process: "<<rank<<" Povidomlennya - "<<message<<endl;}
+	} 
+	if (rank == 1)
+	{ 
+	MPI_Irecv(&message, 6, MPI_INT, 8, tag, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request,&status);
+	if((rank+1)%3==0){cout<<"Process: "<<rank<<" Povidomlennya - "<<message<<endl;}
+	} 
+
+	if (rank == 2)
+	{ 
+	MPI_Irecv(&message, 6, MPI_INT, 8, tag, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request,&status);
+	if((rank+1)%3==0){cout<<"Process: "<<rank<<" Povidomlennya - "<<message<<endl;}
+	} 
+
+
+	if (rank == 3)
+	{ 
+	MPI_Irecv(&message, 6, MPI_INT, 8, tag, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request,&status);
+	if((rank+1)%3==0){cout<<"Process: "<<rank<<" Povidomlennya - "<<message<<endl;}
+	} 
+	if (rank == 4)
+	{ 
+	MPI_Irecv(&message, 6, MPI_INT, 8, tag, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request,&status);
+	if((rank+1)%3==0){cout<<"Process: "<<rank<<" Povidomlennya - "<<message<<endl;}
+	} 
+	if (rank == 5)
+	{ 
+	MPI_Irecv(&message, 6, MPI_INT, 8, tag, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request,&status);
+	if((rank+1)%3==0){cout<<"Process: "<<rank<<" Povidomlennya - "<<message<<endl;}
+	} 
+	if (rank == 6)
+	{ 
+	MPI_Irecv(&message, 6, MPI_INT, 8, tag, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request,&status);
+	if((rank+1)%3==0){cout<<"Process: "<<rank<<" Povidomlennya - "<<message<<endl;}
+	} 
+	if (rank == 7)
+	{ 
+	MPI_Irecv(&message, 6, MPI_INT, 8, tag, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request,&status);
+	if((rank+1)%3==0){cout<<"Process: "<<rank<<" Povidomlennya - "<<message<<endl;}
+	} 
+	if (rank==8)
+	{ 
+	MPI_Isend(&message, sizeof(message) , MPI_CHAR, 0, tag, MPI_COMM_WORLD,&request);
+	MPI_Wait(&request,&status);
+	MPI_Isend(&message, sizeof(message), MPI_CHAR, 1, tag, MPI_COMM_WORLD,&request);
+	MPI_Wait(&request,&status);
+	MPI_Isend(&message,sizeof(message), MPI_CHAR, 2, tag, MPI_COMM_WORLD,&request);
+	MPI_Wait(&request,&status);
+	MPI_Isend(&message, sizeof(message) , MPI_CHAR, 3, tag, MPI_COMM_WORLD,&request);
+	MPI_Wait(&request,&status);
+	MPI_Isend(&message, sizeof(message) , MPI_CHAR, 4,tag, MPI_COMM_WORLD,&request);
+	MPI_Wait(&request,&status);
+	MPI_Isend(&message, sizeof(message) , MPI_CHAR, 5, tag, MPI_COMM_WORLD,&request);
+	MPI_Wait(&request,&status);
+	MPI_Isend(&message, sizeof(message) , MPI_CHAR, 6, tag, MPI_COMM_WORLD,&request);
+	MPI_Wait(&request,&status);
+	MPI_Isend(&message, sizeof(message) , MPI_CHAR, 7, tag, MPI_COMM_WORLD,&request);
+	MPI_Wait(&request,&status);
+	}
+	MPI_Finalize();
+	return 0;
+}
