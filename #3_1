@@ -1,0 +1,48 @@
+#include <mpi.h>
+#include <iostream>
+#include <cstdlib>
+#include <string>
+using namespace std;
+int main(int argc, char **argv)
+{	
+	MPI_Request request;
+	MPI_Status status;
+	int rank, chuslo, chuslo1,TAG = 0;	
+	int a;
+	int flag = 0;
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	if (rank == 0)
+	{		
+		cout << "Vvedit chuslo:   ";
+		cin >> chuslo;
+		chuslo1 = chuslo/4;		
+		MPI_Isend(&chuslo, 1 , MPI_INT, 1, TAG, MPI_COMM_WORLD,&request);	
+		MPI_Isend(&chuslo1, 1 , MPI_INT, 2, TAG, MPI_COMM_WORLD,&request);		
+		MPI_Isend(&chuslo1, 1 , MPI_INT, 3, TAG, MPI_COMM_WORLD,&request);		
+		MPI_Wait(&request,&status);
+	}
+	if (rank == 1)
+	{		
+		MPI_Irecv(&chuslo, 1 , MPI_INT, 0, TAG, MPI_COMM_WORLD, &request);
+		MPI_Wait(&request,&status);
+		cout<<"Process - "<<rank<<"     "<<"Otrumane povidomlennya - "<<chuslo<<endl;		
+		
+	}
+	if (rank == 2)
+	{		
+		MPI_Irecv(&chuslo1, 1 , MPI_INT, 0, TAG, MPI_COMM_WORLD, &request);
+		MPI_Wait(&request,&status);
+		cout << "Process - " << rank << "     " << "Otrumane povidomlennya - " << chuslo1 << endl;
+		
+	}
+	if (rank == 3)
+	{		
+		MPI_Irecv(&chuslo1, 1 , MPI_INT, 0, TAG, MPI_COMM_WORLD, &request);
+		MPI_Wait(&request,&status);
+		cout << "Process - " << rank << "     " << "Otrumane povidomlennya - " << chuslo1 << endl;			
+	
+	}
+	MPI_Finalize();
+	return 0;
+}
