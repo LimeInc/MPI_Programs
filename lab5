@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <iostream>
+#include <cstdlib>
+#include <cilk/cilk.h>
+#include <cilk/reducer_opadd.h>
+#include <time.h>
+#include <fstream>
+using namespace std;
+cilk::reducer_opadd<int> sum;
+int main()
+{    
+	int t=clock();
+	int i, j, n, m;
+	int chuslo;
+//створюємо масив
+	ifstream f("in.txt");
+	f >> n >> m;
+    cout << "Enter number of equations: " << n <<endl;    
+    cout << "Enter number of variables: " << m << endl;    
+    m+=1;
+	float matrix[100][100];
+//ініціалізуєм і виводимо масив
+    for(i = 0; i<n; i++) 
+	{
+        for(j = 0; j<m; j++)
+        {
+            f >> matrix[i][j];
+			cout << matrix[i][j] << "\t";            
+		} 
+		cout << endl;
+	}
+	cout << endl;
+//Метод Гаусса
+//Прямий хід, приведення до трикутного вигляду
+	float  tmp, xx[100];    
+	cilk_for(int k = 0; k < m-2; k++)		
+		cilk_for(int i = k+1; i < n; i++)
+		{			
+		    tmp = matrix[k][k] / -matrix[i][k];
+			cilk_for(int j = k; j < m; j++)						
+				matrix[i][j] += matrix[k][j]/tmp;		
+		}
+	cilk_sync;
+//зворотній хід
+	cilk::reducer_opadd<float> sum;
+	cilk_for (int i=m-2; i>=0; i--)
+	{
+		sum->set_value(matrix[i][m-1]);
+		for (int j=i+1; j<m-1; j++)
+			sum += -matrix[i][j] * xx[j];
+		xx[i] = sum->get_value() / matrix[i][i];
+	}
+	cilk_sync;
+//Виводимо результат
+    for (i=0; i<n; i++)				
+		cout << xx[i] << "\t";	
+    cout << endl;		
+	cout << "Chas vykonannya - " << clock() << endl;
+    system("pause");
+    return 0;
+}
