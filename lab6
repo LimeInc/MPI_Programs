@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include "tbb/task_scheduler_init.h"
+#include "tbb/parallel_for.h"
+#include "tbb/blocked_range.h"
+#include "tbb/tick_count.h"
+#include "time.h"
+#include <math.h>
+
+
+
+using namespace std;
+using namespace tbb;
+
+class Gaus
+{
+private:
+	float matrix[100][100];
+	int m,n;
+public:
+	Gaus()
+	{		
+	//створюємо масив
+		ifstream f("in.txt");
+		f >> n >> m;
+		cout << "Enter number of equations: " << n <<endl;    
+		cout << "Enter number of variables: " << m << endl;    
+		m+=1;
+		//ініціалізуєм  масив
+		for(int i = 0; i < n; i++) 		
+			for(int j = 0; j < m; j++)			
+				f >> matrix[i][j];	
+		cout << endl;
+		for(int i = 0; i < n; i++) 
+		{
+			for(int j = 0; j < m; j++)				
+				cout << matrix[i][j] << "\t";		
+			cout << endl;
+		}
+		cout << endl;
+	}
+	void operator() (const blocked_range <int> &range) const
+	{
+		float mas[100][100];
+		for(int i = 0; i < n; i++) 		
+			for(int j = 0; j < m; j++)			
+				mas[i][j] = matrix[i][j];
+	//Метод Гаусса
+	//Прямий хід, приведення до трикутного вигляду
+		float  tmp, xx[100];    
+		for(int k = 0; k < m-2; k++)		
+			for(int i = k+1; i < n; i++)
+			{			
+				tmp = mas[k][k] / -mas[i][k];
+				for(int j = k; j < m; j++)						
+					mas[i][j] += mas[k][j]/tmp;		
+			}
+	
+	//зворотній хід
+		int r;
+		for (int i=m-2; i>=0; i--)
+		{			
+			for (int j=i+1; j<m-1; j++)				
+				mas[i][m-1] += -mas[i][j] * xx[j];
+			xx[i] = mas[i][m-1] / mas[i][i];
+		}	
+		
+	//Виводимо результат
+		for (int i=0; i<n; i++)				
+			cout << xx[i] << "\t";			
+		cout << endl;
+		}
+};
+
+
+int main()
+{    
+	tick_count t = tick_count::now();	
+	task_scheduler_init init;
+	parallel_for(blocked_range <int> (0, 1), Gaus());
+	tick_count t1 = tick_count::now();
+	cout << "Chas vykonannya - " << (t1 - t).seconds() << " seconds" << endl;
+    system("pause");
+    return 0;
+}
